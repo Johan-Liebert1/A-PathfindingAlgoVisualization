@@ -3,6 +3,8 @@ import pygame
 from colors import colors
 from node import make_grid
 
+path = []
+
 # making the grid
 grid_len = 20
 main_grid = make_grid(grid_len)
@@ -31,18 +33,25 @@ def display_grid(grid):
 
 display_grid(main_grid)
 
-def show_steps(grid):
+def show_steps(grid, endNode):
     cell_width = WIN_WIDTH // grid_len
     cell_height = WIN_HEIGHT // grid_len
 
     for row in range(grid_len):
         for col in range(grid_len):
 
+            
+            if not grid[row][col].isWall:
+                color = colors['green'] if grid[row][col].isOpen else colors['red']
+
             if grid[row][col].isOpen is None:
                 color = colors['white']
 
-            else:
-                color = colors['green'] if grid[row][col].isOpen else colors['red']
+            if grid[row][col].isWall:
+                color = colors['black']
+
+            if grid[row][col] == endNode:
+                color = colors['end_node']
 
             pygame.draw.rect(
                 window, 
@@ -93,17 +102,21 @@ def aStar(start_node, end_node):
                 current_node = node
                 current_node.isOpen = True
 
-        print(f'current_node = {current_node.i, current_node.j}')
+        print(f'current_node = {current_node.i, current_node.j}', end = " ")
+
+        current_node.isPath = True
 
         if current_node == end_node:
             return
 
-        open_set.remove(current_node)
         current_node.isOpen = False
+
+        open_set.remove(current_node)
+        
 
         for neighbor in current_node.neighbors:
             # assuming 1 as the distance btw tow neighbouing poitns
-            print(f'neighbor = {neighbor}')
+            # print(f'neighbor = {neighbor}')
 
             tempG = current_node.g + 1
 
@@ -112,17 +125,15 @@ def aStar(start_node, end_node):
                 neighbor.h = getHScore(neighbor, end_node)
                 neighbor.f = neighbor.g + neighbor.h
 
-            if neighbor not in open_set:
+            if neighbor not in open_set and not neighbor.isWall:
                 open_set.append(neighbor)
                 neighbor.isOpen = True
 
-        print(f'openSet = {open_set}')
-
-        show_steps(main_grid)
+        show_steps(main_grid, end_node)
 
 
 
-aStar(main_grid[0][0], main_grid[19][19])
+aStar(main_grid[0][0], main_grid[10][10])
 # see_neighbors()
 
 # MAIN LOOP

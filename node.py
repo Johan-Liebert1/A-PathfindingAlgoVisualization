@@ -1,9 +1,12 @@
+import random
+
 class Node():
     def __init__(self, i, j):
         self.i = i
         self.j = j
         self.isWall = False
         self.isOpen = None
+        self.isPath = False
         self.f = 0
         self.g = 0
         self.h = 0
@@ -27,6 +30,14 @@ class Node():
         if j < len(grid) - 1:
             self.neighbors.append(grid[i][j + 1])
 
+        # for diagonal neighbors
+
+        if i < len(grid) - 1 and j < len(grid) - 1:
+            self.neighbors.append(grid[i + 1][j + 1])
+
+        if i > 0 and j > 0:
+            self.neighbors.append(grid[i - 1][j - 1])
+
 
 
 def make_grid(length):
@@ -36,6 +47,8 @@ def make_grid(length):
         for j in range(length):
             node = Node(i, j)
 
+            if random.randrange(1, 101) > 70: node.isWall = True
+
             lst.append(node)
 
         main_grid.append(lst)
@@ -44,6 +57,10 @@ def make_grid(length):
     for i in range(length):
         for j in range(length):
             main_grid[i][j].add_neighbors(main_grid)
+
+    
+
+    
 
     return main_grid
 
