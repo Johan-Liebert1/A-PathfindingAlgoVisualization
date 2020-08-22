@@ -11,9 +11,10 @@ class Node():
         self.g = 0
         self.h = 0
         self.neighbors = []
+        self.previous = None
 
     
-    def add_neighbors(self, grid):
+    def add_neighbors(self, grid, diagonal):
         i = self.i
         j = self.j
 
@@ -30,13 +31,25 @@ class Node():
         if j < len(grid) - 1:
             self.neighbors.append(grid[i][j + 1])
 
-        # for diagonal neighbors
+        if diagonal:
+            # for diagonal neighbors
 
-        if i < len(grid) - 1 and j < len(grid) - 1:
-            self.neighbors.append(grid[i + 1][j + 1])
+            # down and right
+            if i < len(grid) - 1 and j < len(grid) - 1:
+                self.neighbors.append(grid[i + 1][j + 1])
 
-        if i > 0 and j > 0:
-            self.neighbors.append(grid[i - 1][j - 1])
+            # up and right
+            if i > 0 and j < len(grid) - 1:
+                self.neighbors.append(grid[i - 1][j + 1])
+
+            #down and left
+            if i < len(grid) - 1 and j > 0:
+                self.neighbors.append(grid[i + 1][j - 1])
+
+            #up and left
+            if i > 0 and j > 0:
+                self.neighbors.append(grid[i - 1][j - 1])
+
 
 
 
@@ -56,11 +69,8 @@ def make_grid(length):
 
     for i in range(length):
         for j in range(length):
-            main_grid[i][j].add_neighbors(main_grid)
+            main_grid[i][j].add_neighbors(main_grid, diagonal = True)
 
-    
-
-    
 
     return main_grid
 
