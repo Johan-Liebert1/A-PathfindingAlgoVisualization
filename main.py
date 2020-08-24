@@ -2,11 +2,13 @@ import pygame
 from math import sqrt
 from colors import colors
 from node import make_grid
-
+import time
 
 # making the grid
 grid_len = 20
 main_grid = make_grid(grid_len)
+path = [] # to reconstruct the optimal path
+
 
 # pygame config
 pygame.init()
@@ -32,7 +34,7 @@ def display_grid(grid):
 
 display_grid(main_grid)
 
-def show_steps(grid, endNode, finalSol = False):
+def show_steps(grid, sNode, endNode, finalSol = False):
     cell_width = WIN_WIDTH // grid_len
     cell_height = WIN_HEIGHT // grid_len
 
@@ -48,11 +50,11 @@ def show_steps(grid, endNode, finalSol = False):
             if grid[row][col].isWall:
                 color = colors['black']
 
-            if grid[row][col].isPath and finalSol:
-                color = colors['blue']
-
             if grid[row][col] == endNode:
                 color = colors['end_node']
+            
+            if grid[row][col] == sNode:
+                color = colors['start_node']
 
             pygame.draw.rect(
                 window, 
@@ -66,6 +68,32 @@ def show_steps(grid, endNode, finalSol = False):
             )
     
     pygame.display.update()
+
+
+def colorFinalPath(grid):
+    print(f'path = {path}')
+    cell_width = WIN_WIDTH // grid_len
+    cell_height = WIN_HEIGHT // grid_len
+
+    for row in range(grid_len):
+        for col in range(grid_len):
+
+            if grid[row][col] in path:
+                print('coloring blue')
+                color = colors['blue']
+
+                pygame.draw.rect(
+                    window, 
+                    color, 
+                    (
+                        row * cell_height + 1, 
+                        col * cell_width + 1,   
+                        cell_width - 1, 
+                        cell_height - 1
+                    )
+                )
+    
+                pygame.display.update()
 
 
 # HScore function
@@ -87,7 +115,12 @@ def aStar(start_node, end_node):
     open_set = [start_node]
     closed_set = []
 
+    if start_node.isWall:
+        print("The start node is a wall")
+        return
+
     while True:
+        
         if len(open_set) < 1:
             print('No Solutions Found')
             break
@@ -101,13 +134,19 @@ def aStar(start_node, end_node):
 
         # print(f'current_node = {current_node.i, current_node.j}', end = " ")
 
-        current_node.isPath = True
-
         if current_node == end_node:
-            show_steps(main_grid, end_node, finalSol = True)
+            temp = end_node
+            path.append(temp)
 
-            return
+            while temp.previous is not None:
+                path.append(temp.previous)
+                temp = temp.previous
 
+            print("DONE")
+            colorFinalPath(main_grid)
+            break
+
+        # current_node.isPath = True
         current_node.isOpen = False
 
         open_set.remove(current_node)
@@ -125,20 +164,23 @@ def aStar(start_node, end_node):
             tempG = current_node.g + getHScore(current_node, neighbor)
 
             if neighbor not in open_set and not neighbor.isWall:
+                neighbor.g = tempG
                 open_set.append(neighbor)
                 neighbor.isOpen = True
+                neighbor.previous = current_node
 
             if tempG >= neighbor.g:
-                continue # there is not a better path
+                continue # there is no better path
             
-
+            # neighbor was found in the open set, so we check if we can get to it in 
+            # a better way as tempG is now less than neighbor.g
             neighbor.previous = current_node
-            neighbor.isPath = True
+            # neighbor.isPath = True
             neighbor.g = tempG
             neighbor.h = getHScore(neighbor, end_node)
             neighbor.f = neighbor.g + neighbor.h
 
-        show_steps(main_grid, end_node)
+        show_steps(main_grid, start_node, end_node)
 
 
 aStar(main_grid[0][0], main_grid[10][10])

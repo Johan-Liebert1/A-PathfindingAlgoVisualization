@@ -13,7 +13,9 @@ class Node():
         self.neighbors = []
         self.previous = None
 
-    
+    def __repr__(self):
+        return f'< i = {self.i}, j = {self.j}, previous = {self.previous} >'
+
     def add_neighbors(self, grid, diagonal):
         i = self.i
         j = self.j
@@ -60,7 +62,7 @@ def make_grid(length):
         for j in range(length):
             node = Node(i, j)
 
-            if random.randrange(1, 101) > 70: node.isWall = True
+            if random.randrange(1, 101) > 70 and i != 0 and j!=0: node.isWall = True
 
             lst.append(node)
 
