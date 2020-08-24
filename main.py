@@ -5,7 +5,7 @@ from node import make_grid
 import time
 
 # making the grid
-grid_len = 20
+grid_len = 25
 main_grid = make_grid(grid_len)
 path = [] # to reconstruct the optimal path
 
@@ -79,7 +79,6 @@ def colorFinalPath(grid):
         for col in range(grid_len):
 
             if grid[row][col] in path:
-                print('coloring blue')
                 color = colors['blue']
 
                 pygame.draw.rect(
@@ -156,34 +155,34 @@ def aStar(start_node, end_node):
             # assuming 1 as the distance btw two neighbouring points that aren't diagonally
             # neighbors
 
-            # need to add 1.14 if neighbor is diagonal. add propery to node class to check if neighbor is diagonal
-
-            if neighbor in closed_set:
+            if neighbor in closed_set or neighbor.isWall:
                 continue
 
             tempG = current_node.g + getHScore(current_node, neighbor)
 
-            if neighbor not in open_set and not neighbor.isWall:
+            if neighbor not in open_set:
                 neighbor.g = tempG
                 open_set.append(neighbor)
                 neighbor.isOpen = True
                 neighbor.previous = current_node
 
-            if tempG >= neighbor.g:
+            elif tempG >= neighbor.g:
                 continue # there is no better path
             
             # neighbor was found in the open set, so we check if we can get to it in 
             # a better way as tempG is now less than neighbor.g
             neighbor.previous = current_node
-            # neighbor.isPath = True
             neighbor.g = tempG
-            neighbor.h = getHScore(neighbor, end_node)
+
+            if neighbor.h == 0:
+                neighbor.h = getHScore(neighbor, end_node)
+
             neighbor.f = neighbor.g + neighbor.h
 
         show_steps(main_grid, start_node, end_node)
 
 
-aStar(main_grid[0][0], main_grid[10][10])
+aStar(main_grid[0][0], main_grid[24][24])
 
 # MAIN LOOP
 
