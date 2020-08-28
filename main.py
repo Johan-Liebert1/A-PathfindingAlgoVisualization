@@ -1,12 +1,22 @@
-import pygame
+import pygame, sys, time, json
 from math import sqrt
 from colors import colors
 from node import make_grid
-import time
+
+print("Please enter the following Values, press enter to use default values. * Required")
+grid_len = input("*Enter the grid dimension. Ex - 20 x 20 > ")
+start = input("Enter the starting node. Ex - 0,0 > ")
+end = input("Enter the ending node. Ex - 10,10 > ")
+d = input("Consider diagonals? (y/n) > ")
 
 # making the grid
-grid_len = 25
-main_grid = make_grid(grid_len)
+grid_len = int(grid_len.split('x')[0])
+sNode = [int(i) for i in start.split(',')] if len(start) > 1 else [0, 0]
+eNode = [int(i) for i in end.split(',')] if len(end) > 1 else [grid_len - 1, grid_len - 1]
+diag = True if d.lower() == 'y' else False
+main_grid = make_grid(grid_len, sNode, eNode, diag)
+
+
 path = [] # to reconstruct the optimal path
 
 
@@ -70,8 +80,7 @@ def show_steps(grid, sNode, endNode, finalSol = False):
     pygame.display.update()
 
 
-def colorFinalPath(grid):
-    print(f'path = {path}')
+def colorFinalPath(grid, sN, eN):
     cell_width = WIN_WIDTH // grid_len
     cell_height = WIN_HEIGHT // grid_len
 
@@ -80,6 +89,12 @@ def colorFinalPath(grid):
 
             if grid[row][col] in path:
                 color = colors['blue']
+
+                if grid[row][col] == eN:
+                    color = colors['end_node']
+            
+                if grid[row][col] == sN:
+                    color = colors['start_node']
 
                 pygame.draw.rect(
                     window, 
@@ -114,10 +129,6 @@ def aStar(start_node, end_node):
     open_set = [start_node]
     closed_set = []
 
-    if start_node.isWall:
-        print("The start node is a wall")
-        return
-
     while True:
         
         if len(open_set) < 1:
@@ -142,7 +153,7 @@ def aStar(start_node, end_node):
                 temp = temp.previous
 
             print("DONE")
-            colorFinalPath(main_grid)
+            colorFinalPath(main_grid, start_node, end_node)
             break
 
         # current_node.isPath = True
@@ -182,7 +193,7 @@ def aStar(start_node, end_node):
         show_steps(main_grid, start_node, end_node)
 
 
-aStar(main_grid[0][0], main_grid[24][24])
+aStar(main_grid[sNode[0]][sNode[1]], main_grid[eNode[0]][eNode[1]])
 
 # MAIN LOOP
 

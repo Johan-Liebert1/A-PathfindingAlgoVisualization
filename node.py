@@ -54,7 +54,9 @@ class Node():
 
 
 
-def make_grid(length):
+def make_grid(length, start, end, diag):
+    # start and end are lists for the start and end positions
+
     main_grid = []
     for i in range(length):
         lst = []
@@ -63,7 +65,10 @@ def make_grid(length):
             node = Node(i, j)
 
             # 30 % chance that the current node will be set as a wall
-            if random.randrange(1, 101) > 50 and i != 0 and i!=24 and j != 0 and j!=24: node.isWall = True
+            r = random.randrange(1, 101)
+
+            if r > 70 and i != start[0] and i!= end[0] and j != start[1] and j!= end[1]: 
+                node.isWall = True
 
             lst.append(node)
 
@@ -72,7 +77,8 @@ def make_grid(length):
 
     for i in range(length):
         for j in range(length):
-            main_grid[i][j].add_neighbors(main_grid, diagonal = True)
+            
+            main_grid[i][j].add_neighbors(main_grid, diagonal = diag)
  
 
     return main_grid
