@@ -67,7 +67,10 @@ def make_grid(length, start, end, diag):
             # 30 % chance that the current node will be set as a wall
             r = random.randrange(1, 101)
 
-            if r > 70 and i != start[0] and i!= end[0] and j != start[1] and j!= end[1]: 
+            # if r > 70 and ((i != start[0] and j != start[1]) or (i != end[0] and j!= end[1])): 
+            #     node.isWall = True
+
+            if r > 70 and [i, j] != start and [i, j] != end: 
                 node.isWall = True
 
             lst.append(node)

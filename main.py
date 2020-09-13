@@ -1,16 +1,16 @@
-import pygame, sys, time, json
+import pygame, sys, time, json, os
 from math import sqrt
 from colors import colors
 from node import make_grid
 
 print("Please enter the following Values, press enter to use default values. * Required")
-grid_len = input("*Enter the grid dimension. Ex - 20 x 20 > ")
+grid_len = input("* Enter the grid dimension. Ex - 50x50 > ")
 start = input("Enter the starting node. Ex - 0,0 > ")
 end = input("Enter the ending node. Ex - 10,10 > ")
 d = input("Consider diagonals? (y/n) > ")
 
 # making the grid
-grid_len = int(grid_len.split('x')[0])
+grid_len = int(grid_len.split('x')[0]) if len(grid_len) > 1 else 50
 sNode = [int(i) for i in start.split(',')] if len(start) > 1 else [0, 0]
 eNode = [int(i) for i in end.split(',')] if len(end) > 1 else [grid_len - 1, grid_len - 1]
 diag = True if d.lower() == 'y' else False
@@ -22,9 +22,11 @@ path = [] # to reconstruct the optimal path
 
 # pygame config
 pygame.init()
-WIN_WIDTH = 600
-WIN_HEIGHT = 600
+WIN_WIDTH = 700
+WIN_HEIGHT = 700
+os.environ['SDL_VIDEO_WINDOW_POS'] = "%d, %d" %(50,50)
 window = pygame.display.set_mode((WIN_WIDTH, WIN_HEIGHT))
+pygame.display.set_caption("A* Pathfinding Algorithm")
 window.fill(colors['white'])
 pygame.display.flip()
 
@@ -198,8 +200,8 @@ aStar(main_grid[sNode[0]][sNode[1]], main_grid[eNode[0]][eNode[1]])
 # MAIN LOOP
 
 run = True
-
 while run:
+ 
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             run = False
